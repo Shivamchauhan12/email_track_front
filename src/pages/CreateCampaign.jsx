@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Link as LinkIcon, Tag } from 'lucide-react';
 
 export default function CreateCampaign() {
   const navigate = useNavigate();
@@ -15,11 +15,26 @@ export default function CreateCampaign() {
     bodyHtml: '',
     bodyText: ''
   });
+  const [detectedLinks, setDetectedLinks] = useState([]);
+  const [linkNames, setLinkNames] = useState({});
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchContacts();
   }, []);
+
+  // Automatically extract unique links whenever bodyHtml changes
+  useEffect(() => {
+    const linkRegex = /href=["'](https?:\/\/[^"']+)["']/g;
+    const links = [];
+    let match;
+    while ((match = linkRegex.exec(form.bodyHtml)) !== null) {
+      if (!links.includes(match[1])) {
+        links.push(match[1]);
+      }
+    }
+    setDetectedLinks(links);
+  }, [form.bodyHtml]);
 
   const fetchContacts = async () => {
     try {
@@ -30,13 +45,23 @@ export default function CreateCampaign() {
     }
   };
 
+  const handleLinkNameChange = (url, name) => {
+    setLinkNames(prev => ({ ...prev, [url]: name }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
+      const customLinks = detectedLinks.map(url => ({
+        originalUrl: url,
+        name: linkNames[url] || ''
+      }));
+
       const res = await api.post('/api/campaigns', {
         ...form,
-        contactIds: selectedContacts
+        contactIds: selectedContacts,
+        customLinks
       });
       navigate(`/campaigns/${res.data.id}`);
     } catch (err) {
@@ -105,7 +130,7 @@ export default function CreateCampaign() {
             <textarea className="input font-mono text-sm" rows={12}
               value={form.bodyHtml}
               onChange={e => setForm({ ...form, bodyHtml: e.target.value })}
-              placeholder="<p>Hello {{firstName}},</p><p>Check out <a href='https://example.com'>this link</a></p>"
+              placeholder="<p>Hello {{firstName}},</p><p>Check out <a href='https://example.com/pricing'>our pricing page</a>!</p>"
               required />
             <div>
               <label className="label">Plain Text Version (optional)</label>
@@ -114,6 +139,38 @@ export default function CreateCampaign() {
                 onChange={e => setForm({ ...form, bodyText: e.target.value })} />
             </div>
           </div>
+
+          {/* Detected Links Section */}
+          {detectedLinks.length > 0 && (
+            <div className="card border-l-4 border-blue-600 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <LinkIcon className="w-5 h-5 text-blue-600" />
+                  <h3 className="font-semibold text-gray-900">
+                    Detected Links in Email ({detectedLinks.length})
+                  </h3>
+                </div>
+                <span className="text-xs text-gray-500">Give custom labels for analytics tracking</span>
+              </div>
+              <div className="space-y-3 pt-2">
+                {detectedLinks.map((url, idx) => (
+                  <div key={idx} className="p-3 bg-gray-50 rounded-lg space-y-2 border border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <Tag className="w-4 h-4 text-gray-400" />
+                      <span className="text-xs text-gray-500 font-mono truncate flex-1">{url}</span>
+                    </div>
+                    <input
+                      type="text"
+                      className="input text-sm py-1.5"
+                      placeholder="e.g., Pricing Page Link / Buy Button"
+                      value={linkNames[url] || ''}
+                      onChange={e => handleLinkNameChange(url, e.target.value)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">

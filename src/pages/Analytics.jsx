@@ -112,17 +112,26 @@ export default function Analytics() {
 
           <div className="card">
             <h3 className="font-semibold mb-4">Link Performance</h3>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {analytics.clicksByLink.map(link => (
-                <div key={link.url} className="flex items-center gap-4">
+                <div key={link.id || link.url} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{link.url}</p>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-sm font-semibold text-gray-900 truncate">
+                        {link.name || link.url}
+                      </p>
+                      <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                        {link.clicks} {link.clicks === 1 ? 'click' : 'clicks'}
+                      </span>
+                    </div>
+                    {link.name && link.name !== link.url && (
+                      <p className="text-xs text-gray-500 font-mono truncate mb-1.5">{link.url}</p>
+                    )}
+                    <div className="w-full bg-gray-200 rounded-full h-2">
                       <div className="bg-blue-600 h-2 rounded-full transition-all"
-                        style={{ width: `${analytics.engagement.totalRecipients > 0 ? (link.clicks / analytics.engagement.totalRecipients) * 100 : 0}%` }} />
+                        style={{ width: `${analytics.engagement.totalRecipients > 0 ? Math.min(100, (link.clicks / analytics.engagement.totalRecipients) * 100) : 0}%` }} />
                     </div>
                   </div>
-                  <span className="text-sm font-medium text-gray-900 w-12 text-right">{link.clicks}</span>
                 </div>
               ))}
             </div>

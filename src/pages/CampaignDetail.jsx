@@ -108,21 +108,43 @@ export default function CampaignDetail() {
               </thead>
               <tbody>
                 {campaign.contacts.map(cc => (
-                  <tr key={cc.id} className="border-b">
-                    <td className="px-3 py-2">
-                      <p className="font-medium">{cc.contact.firstName} {cc.contact.lastName}</p>
+                  <tr key={cc.id} className="border-b hover:bg-gray-50/50">
+                    <td className="px-3 py-3">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-medium text-gray-900">{cc.contact.firstName} {cc.contact.lastName}</p>
+                        {cc.contact.company && (
+                          <span className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-semibold border border-blue-100">
+                            🏢 {cc.contact.company}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-gray-500">{cc.contact.email}</p>
                     </td>
-                    <td className="px-3 py-2">{cc.sentAt ? format(new Date(cc.sentAt), 'MMM d, HH:mm') : '-'}</td>
-                    <td className="px-3 py-2">
-                      {cc.openedAt ? (
-                        <span className="text-green-600 font-medium">{cc.openCount}x &middot; {format(new Date(cc.openedAt), 'MMM d')}</span>
-                      ) : (<span className="text-gray-400">Not opened</span>)}
+                    <td className="px-3 py-3 text-xs text-gray-600">
+                      {cc.sentAt ? format(new Date(cc.sentAt), 'MMM d, HH:mm') : '-'}
                     </td>
-                    <td className="px-3 py-2">
-                      {cc.clicks.length > 0 ? (
-                        <span className="text-blue-600 font-medium">{cc.clicks.length}x</span>
-                      ) : (<span className="text-gray-400">-</span>)}
+                    <td className="px-3 py-3">
+                      {cc.openedAt ? (
+                        <span className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded font-medium inline-block">
+                          {cc.openCount} {cc.openCount === 1 ? 'open' : 'opens'} &middot; {format(new Date(cc.openedAt), 'MMM d')}
+                        </span>
+                      ) : (<span className="text-xs text-gray-400">Not opened</span>)}
+                    </td>
+                    <td className="px-3 py-3">
+                      {cc.clicks && cc.clicks.length > 0 ? (
+                        <div className="space-y-1 max-w-xs">
+                          {cc.clicks.map(click => (
+                            <div key={click.id} className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded border border-purple-100 flex items-center justify-between gap-2">
+                              <span className="font-semibold truncate max-w-[140px]" title={click.link.name || click.link.originalUrl}>
+                                🔗 {click.link.name || click.link.originalUrl}
+                              </span>
+                              <span className="font-bold bg-purple-200 text-purple-800 px-1.5 py-0.5 rounded text-[10px] shrink-0">
+                                {click.clickCount || 1} {click.clickCount === 1 ? 'click' : 'clicks'}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (<span className="text-xs text-gray-400">No clicks</span>)}
                     </td>
                   </tr>
                 ))}
@@ -135,14 +157,19 @@ export default function CampaignDetail() {
           <h3 className="font-semibold mb-4">Tracked Links</h3>
           <div className="space-y-3">
             {campaign.links.map(link => (
-              <div key={link.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div key={link.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{link.originalUrl}</p>
-                  <p className="text-xs text-gray-500">Code: {link.trackingCode}</p>
+                  <p className="text-sm font-semibold text-gray-900 truncate">
+                    {link.name || link.originalUrl}
+                  </p>
+                  {link.name && (
+                    <p className="text-xs text-gray-500 truncate font-mono">{link.originalUrl}</p>
+                  )}
+                  <p className="text-xs text-gray-400">Code: {link.trackingCode}</p>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <MousePointer className="w-4 h-4 text-gray-400" />
-                  <span className="font-medium">{link._count.clicks}</span>
+                <div className="flex items-center gap-2 text-sm bg-purple-50 px-2.5 py-1 rounded-md text-purple-700">
+                  <MousePointer className="w-4 h-4 text-purple-600" />
+                  <span className="font-bold">{link._count ? link._count.clicks : (link.clickCount || 0)}</span>
                 </div>
               </div>
             ))}
