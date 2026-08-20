@@ -82,17 +82,17 @@ export default function CreateCampaign() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <button onClick={() => navigate('/campaigns')} className="p-2 hover:bg-gray-100 rounded-lg">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center gap-3">
+        <button onClick={() => navigate('/campaigns')} className="p-2 hover:bg-gray-100 rounded-lg shrink-0" aria-label="Go back">
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h2 className="text-2xl font-bold text-gray-900">New Campaign</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">New Campaign</h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <div className="lg:col-span-2 space-y-4">
-          <div className="card space-y-4">
+          <div className="card p-4 sm:p-6 space-y-4">
             <div>
               <label className="label">Campaign Name</label>
               <input type="text" className="input" value={form.name}
@@ -103,7 +103,7 @@ export default function CreateCampaign() {
               <input type="text" className="input" value={form.subject}
                 onChange={e => setForm({ ...form, subject: e.target.value })} required />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="label">From Email</label>
                 <input type="email" className="input" value={form.fromEmail}
@@ -117,24 +117,24 @@ export default function CreateCampaign() {
             </div>
           </div>
 
-          <div className="card space-y-4">
-            <div className="flex items-center justify-between">
+          <div className="card p-4 sm:p-6 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <label className="label mb-0">Email Body (HTML)</label>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {['{{firstName}}','{{lastName}}','{{email}}','{{company}}'].map(tag => (
                   <button key={tag} type="button" onClick={() => insertTag(tag)}
-                    className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded">{tag}</button>
+                    className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-gray-700 font-mono transition-colors">{tag}</button>
                 ))}
               </div>
             </div>
-            <textarea className="input font-mono text-sm" rows={12}
+            <textarea className="input font-mono text-xs sm:text-sm" rows={10}
               value={form.bodyHtml}
               onChange={e => setForm({ ...form, bodyHtml: e.target.value })}
               placeholder="<p>Hello {{firstName}},</p><p>Check out <a href='https://example.com/pricing'>our pricing page</a>!</p>"
               required />
             <div>
               <label className="label">Plain Text Version (optional)</label>
-              <textarea className="input text-sm" rows={4}
+              <textarea className="input text-xs sm:text-sm" rows={3}
                 value={form.bodyText}
                 onChange={e => setForm({ ...form, bodyText: e.target.value })} />
             </div>
@@ -142,11 +142,11 @@ export default function CreateCampaign() {
 
           {/* Detected Links Section */}
           {detectedLinks.length > 0 && (
-            <div className="card border-l-4 border-blue-600 space-y-3">
-              <div className="flex items-center justify-between">
+            <div className="card p-4 sm:p-6 border-l-4 border-blue-600 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
                 <div className="flex items-center gap-2">
-                  <LinkIcon className="w-5 h-5 text-blue-600" />
-                  <h3 className="font-semibold text-gray-900">
+                  <LinkIcon className="w-5 h-5 text-blue-600 shrink-0" />
+                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
                     Detected Links in Email ({detectedLinks.length})
                   </h3>
                 </div>
@@ -155,13 +155,13 @@ export default function CreateCampaign() {
               <div className="space-y-3 pt-2">
                 {detectedLinks.map((url, idx) => (
                   <div key={idx} className="p-3 bg-gray-50 rounded-lg space-y-2 border border-gray-100">
-                    <div className="flex items-center gap-2">
-                      <Tag className="w-4 h-4 text-gray-400" />
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Tag className="w-4 h-4 text-gray-400 shrink-0" />
                       <span className="text-xs text-gray-500 font-mono truncate flex-1">{url}</span>
                     </div>
                     <input
                       type="text"
-                      className="input text-sm py-1.5"
+                      className="input text-xs sm:text-sm py-1.5"
                       placeholder="e.g., Pricing Page Link / Buy Button"
                       value={linkNames[url] || ''}
                       onChange={e => handleLinkNameChange(url, e.target.value)}
@@ -174,23 +174,23 @@ export default function CreateCampaign() {
         </div>
 
         <div className="space-y-4">
-          <div className="card">
-            <h3 className="font-semibold mb-3">Select Recipients ({selectedContacts.length})</h3>
-            <div className="max-h-96 overflow-y-auto space-y-2">
+          <div className="card p-4 sm:p-6">
+            <h3 className="font-semibold text-base sm:text-lg mb-3">Select Recipients ({selectedContacts.length})</h3>
+            <div className="max-h-64 sm:max-h-96 overflow-y-auto space-y-2 pr-1">
               {contacts.map(contact => (
-                <label key={contact.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                <label key={contact.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
                   <input type="checkbox" checked={selectedContacts.includes(contact.id)}
-                    onChange={() => toggleContact(contact.id)} className="w-4 h-4 text-blue-600 rounded" />
+                    onChange={() => toggleContact(contact.id)} className="w-4 h-4 text-blue-600 rounded shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{contact.firstName} {contact.lastName}</p>
-                    <p className="text-xs text-gray-500 truncate">{contact.email}</p>
+                    <p className="text-xs sm:text-sm font-medium truncate">{contact.firstName} {contact.lastName}</p>
+                    <p className="text-[11px] sm:text-xs text-gray-500 truncate">{contact.email}</p>
                   </div>
                 </label>
               ))}
             </div>
           </div>
           <button type="submit" disabled={saving || selectedContacts.length === 0}
-            className="w-full btn-primary py-3 disabled:opacity-50">
+            className="w-full btn-primary py-3 disabled:opacity-50 text-sm font-medium">
             {saving ? 'Creating...' : 'Create Campaign'}
           </button>
         </div>
@@ -198,3 +198,4 @@ export default function CreateCampaign() {
     </div>
   );
 }
+

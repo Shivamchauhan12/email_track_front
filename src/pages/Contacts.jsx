@@ -69,97 +69,102 @@ export default function Contacts() {
   if (loading) return <div className="text-center py-12">Loading...</div>;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Contacts</h2>
-        <div className="flex gap-2">
-          <button onClick={() => setShowBulk(true)} className="btn-secondary flex items-center gap-2">
-            <Upload className="w-4 h-4" /> Bulk Import
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Contacts</h2>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <button onClick={() => setShowBulk(true)} className="btn-secondary flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs sm:text-sm py-2">
+            <Upload className="w-4 h-4 shrink-0" /> <span className="truncate">Bulk Import</span>
           </button>
-          <button onClick={() => setShowAdd(true)} className="btn-primary flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Add Contact
+          <button onClick={() => setShowAdd(true)} className="btn-primary flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs sm:text-sm py-2">
+            <Plus className="w-4 h-4 shrink-0" /> <span className="truncate">Add Contact</span>
           </button>
         </div>
       </div>
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input type="text" placeholder="Search contacts..." className="input pl-10"
+        <input type="text" placeholder="Search contacts..." className="input pl-10 text-xs sm:text-sm"
           value={search} onChange={e => setSearch(e.target.value)} />
       </div>
 
       {showAdd && (
-        <div className="card">
-          <h3 className="font-semibold mb-4">Add Contact</h3>
-          <form onSubmit={handleAdd} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input type="email" placeholder="Email *" className="input" required
+        <div className="card p-4 sm:p-6">
+          <h3 className="font-semibold text-base sm:text-lg mb-4">Add Contact</h3>
+          <form onSubmit={handleAdd} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <input type="email" placeholder="Email *" className="input text-xs sm:text-sm" required
               value={newContact.email} onChange={e => setNewContact({...newContact, email: e.target.value})} />
-            <input type="text" placeholder="First Name" className="input"
+            <input type="text" placeholder="First Name" className="input text-xs sm:text-sm"
               value={newContact.firstName} onChange={e => setNewContact({...newContact, firstName: e.target.value})} />
-            <input type="text" placeholder="Last Name" className="input"
+            <input type="text" placeholder="Last Name" className="input text-xs sm:text-sm"
               value={newContact.lastName} onChange={e => setNewContact({...newContact, lastName: e.target.value})} />
-            <input type="text" placeholder="Company" className="input"
+            <input type="text" placeholder="Company" className="input text-xs sm:text-sm"
               value={newContact.company} onChange={e => setNewContact({...newContact, company: e.target.value})} />
-            <input type="text" placeholder="Tags (comma separated)" className="input"
+            <input type="text" placeholder="Tags (comma separated)" className="input text-xs sm:text-sm"
               value={newContact.tags} onChange={e => setNewContact({...newContact, tags: e.target.value})} />
-            <div className="flex gap-2">
-              <button type="submit" className="btn-primary">Save</button>
-              <button type="button" onClick={() => setShowAdd(false)} className="btn-secondary">Cancel</button>
+            <div className="flex gap-2 sm:col-span-2 lg:col-span-1">
+              <button type="submit" className="btn-primary flex-1 text-xs sm:text-sm py-2">Save</button>
+              <button type="button" onClick={() => setShowAdd(false)} className="btn-secondary flex-1 text-xs sm:text-sm py-2">Cancel</button>
             </div>
           </form>
         </div>
       )}
 
       {showBulk && (
-        <div className="card">
-          <h3 className="font-semibold mb-2">Bulk Import</h3>
-          <p className="text-sm text-gray-500 mb-4">Format: email, firstName, lastName, company, tags (one per line)</p>
+        <div className="card p-4 sm:p-6">
+          <h3 className="font-semibold text-base sm:text-lg mb-1">Bulk Import</h3>
+          <p className="text-xs sm:text-sm text-gray-500 mb-4">Format: email, firstName, lastName, company, tags (one per line)</p>
           <form onSubmit={handleBulk} className="space-y-4">
-            <textarea className="input font-mono text-sm" rows={6} value={bulkText}
+            <textarea className="input font-mono text-xs sm:text-sm" rows={5} value={bulkText}
               onChange={e => setBulkText(e.target.value)}
               placeholder="john@example.com, John, Doe, Acme Inc, lead&#10;jane@example.com, Jane, Smith, Tech Corp, customer" />
             <div className="flex gap-2">
-              <button type="submit" className="btn-primary">Import</button>
-              <button type="button" onClick={() => setShowBulk(false)} className="btn-secondary">Cancel</button>
+              <button type="submit" className="btn-primary text-xs sm:text-sm py-2 px-6">Import</button>
+              <button type="button" onClick={() => setShowBulk(false)} className="btn-secondary text-xs sm:text-sm py-2 px-6">Cancel</button>
             </div>
           </form>
         </div>
       )}
 
-      <div className="card overflow-x-auto">
-        <table className="w-full text-sm text-left">
-          <thead className="text-xs text-gray-500 uppercase bg-gray-50">
-            <tr>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Email</th>
-              <th className="px-4 py-3">Company</th>
-              <th className="px-4 py-3">Tags</th>
-              <th className="px-4 py-3">Campaigns</th>
-              <th className="px-4 py-3"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {contacts.map(c => (
-              <tr key={c.id} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-3 font-medium">{c.firstName} {c.lastName}</td>
-                <td className="px-4 py-3">{c.email}</td>
-                <td className="px-4 py-3">{c.company || '-'}</td>
-                <td className="px-4 py-3">
-                  {c.tags?.split(',').map(tag => (
-                    <span key={tag} className="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full mr-1">{tag.trim()}</span>
-                  ))}
-                </td>
-                <td className="px-4 py-3">{c._count.campaigns}</td>
-                <td className="px-4 py-3">
-                  <button onClick={() => handleDelete(c.id)} className="text-gray-400 hover:text-red-600">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </td>
+      <div className="card p-4 sm:p-6 overflow-hidden">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+          <table className="w-full text-xs sm:text-sm text-left min-w-[600px]">
+            <thead className="text-[11px] sm:text-xs text-gray-500 uppercase bg-gray-50">
+              <tr>
+                <th className="px-3 sm:px-4 py-3">Name</th>
+                <th className="px-3 sm:px-4 py-3">Email</th>
+                <th className="px-3 sm:px-4 py-3">Company</th>
+                <th className="px-3 sm:px-4 py-3">Tags</th>
+                <th className="px-3 sm:px-4 py-3">Campaigns</th>
+                <th className="px-3 sm:px-4 py-3"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {contacts.map(c => (
+                <tr key={c.id} className="hover:bg-gray-50">
+                  <td className="px-3 sm:px-4 py-3 font-medium whitespace-nowrap">{c.firstName} {c.lastName}</td>
+                  <td className="px-3 sm:px-4 py-3 font-mono text-xs">{c.email}</td>
+                  <td className="px-3 sm:px-4 py-3 text-gray-600">{c.company || '-'}</td>
+                  <td className="px-3 sm:px-4 py-3">
+                    <div className="flex flex-wrap gap-1">
+                      {c.tags?.split(',').map(tag => (
+                        <span key={tag} className="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] sm:text-xs rounded-full">{tag.trim()}</span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="px-3 sm:px-4 py-3 text-gray-600">{c._count.campaigns}</td>
+                  <td className="px-3 sm:px-4 py-3 text-right">
+                    <button onClick={() => handleDelete(c.id)} className="p-1 text-gray-400 hover:text-red-600 rounded transition-colors" title="Delete">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
 }
+

@@ -5,6 +5,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    allowedHosts: ["red-effective-seo-loans.trycloudflare.com"],
+    host: true,
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
