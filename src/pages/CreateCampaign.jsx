@@ -19,9 +19,32 @@ export default function CreateCampaign() {
   const [linkNames, setLinkNames] = useState({});
   const [saving, setSaving] = useState(false);
 
+  // Templates Modal State
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [templates, setTemplates] = useState({ defaults: [], custom: [] });
+
   useEffect(() => {
     fetchContacts();
+    fetchTemplates();
   }, []);
+
+  const fetchTemplates = async () => {
+    try {
+      const res = await api.get('/api/templates');
+      setTemplates(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const applyTemplate = (t) => {
+    setForm(prev => ({
+      ...prev,
+      subject: prev.subject || t.subject || '',
+      bodyHtml: t.bodyHtml || ''
+    }));
+    setShowTemplateModal(false);
+  };
 
   // Automatically extract unique links whenever bodyHtml changes
   useEffect(() => {
@@ -118,8 +141,17 @@ export default function CreateCampaign() {
           </div>
 
           <div className="card p-4 sm:p-6 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <label className="label mb-0">Email Body (HTML)</label>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-3">
+              <div className="flex items-center gap-2">
+                <label className="label mb-0">Email Body (HTML)</label>
+                <button
+                  type="button"
+                  onClick={() => setShowTemplateModal(true)}
+                  className="text-xs px-2.5 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-md font-semibold transition-colors flex items-center gap-1 border border-blue-200"
+                >
+                  ✨ Select Template
+                </button>
+              </div>
               <div className="flex flex-wrap gap-1.5">
                 {['{{firstName}}','{{lastName}}','{{email}}','{{company}}'].map(tag => (
                   <button key={tag} type="button" onClick={() => insertTag(tag)}
@@ -127,7 +159,7 @@ export default function CreateCampaign() {
                 ))}
               </div>
             </div>
-            <textarea className="input font-mono text-xs sm:text-sm" rows={10}
+            <textarea className="input font-mono text-xs sm:text-sm" rows={12}
               value={form.bodyHtml}
               onChange={e => setForm({ ...form, bodyHtml: e.target.value })}
               placeholder="<p>Hello {{firstName}},</p><p>Check out <a href='https://example.com/pricing'>our pricing page</a>!</p>"
@@ -195,6 +227,80 @@ export default function CreateCampaign() {
           </button>
         </div>
       </form>
+      {/* Template Picker Modal */}
+      {showTemplateModal && (
+        <div className="fixed inset-0 bg-gray-900/60 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[85vh] flex flex-col my-auto border border-gray-200">
+            <div className="p-4 sm:p-5 border-b border-gray-200 flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-gray-900 text-lg">Choose Email Template</h3>
+                <p className="text-xs text-gray-500">Select a pre-designed template to load into your email body.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowTemplateModal(false)}
+                className="text-gray-400 hover:text-gray-600 text-xl font-bold p-1"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 bg-gray-50">
+              {/* Custom Templates */}
+              {templates.custom && templates.custom.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Your Saved Templates</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {templates.custom.map(t => (
+                      <div key={t.id} className="bg-white p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all space-y-2 flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800">{t.category || 'Custom'}</span>
+                          </div>
+                          <h5 className="font-bold text-gray-900 text-sm mt-1">{t.name}</h5>
+                          {t.subject && <p className="text-xs text-gray-500 truncate">Subject: {t.subject}</p>}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => applyTemplate(t)}
+                          className="w-full btn-primary text-xs py-2 mt-2 font-medium"
+                        >
+                          Use This Template
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Starter Templates */}
+              <div>
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Starter Templates</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {templates.defaults && templates.defaults.map(t => (
+                    <div key={t.id} className="bg-white p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all space-y-2 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800">{t.category}</span>
+                        </div>
+                        <h5 className="font-bold text-gray-900 text-sm mt-1">{t.name}</h5>
+                        {t.subject && <p className="text-xs text-gray-500 truncate">Subject: {t.subject}</p>}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => applyTemplate(t)}
+                        className="w-full btn-primary text-xs py-2 mt-2 font-medium"
+                      >
+                        Use This Template
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

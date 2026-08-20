@@ -1,9 +1,10 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Mail, Users, BarChart3, X } from 'lucide-react';
+import { LayoutDashboard, Mail, Users, BarChart3, Layout, X } from 'lucide-react';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/campaigns', icon: Mail, label: 'Campaigns' },
+  { to: '/templates', icon: Layout, label: 'Templates' },
   { to: '/contacts', icon: Users, label: 'Contacts' },
   { to: '/analytics', icon: BarChart3, label: 'Analytics' },
 ];

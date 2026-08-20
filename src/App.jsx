@@ -8,6 +8,7 @@ import CreateCampaign from './pages/CreateCampaign';
 import CampaignDetail from './pages/CampaignDetail';
 import Contacts from './pages/Contacts';
 import Analytics from './pages/Analytics';
+import Templates from './pages/Templates';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="campaigns" element={<Campaigns />} />
         <Route path="campaigns/new" element={<CreateCampaign />} />
         <Route path="campaigns/:id" element={<CampaignDetail />} />
+        <Route path="templates" element={<Templates />} />
         <Route path="contacts" element={<Contacts />} />
         <Route path="analytics" element={<Analytics />} />
       </Route>
